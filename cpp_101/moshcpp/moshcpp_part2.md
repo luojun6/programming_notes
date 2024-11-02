@@ -1564,3 +1564,112 @@ int main() {
     return 0;
 }
 ```
+
+### 5.5 File Streams
+
+You learnt that all stream classes shared a common base, so they have the same interface and we can work with them the same way.
+
+Now when it comes to files, there are 3 classes you need to know.
+
+- **ifstream**
+  - input file stream which represents an input stream for files
+  - we can use it to read data from a file
+- **ofstream**
+  - outfire stream which represents an output stream for files
+  - we can use it to wirte data into a file
+- **fstream**
+  - combines the functionality of the 2 other classes
+  - it's a stream that we can use both for reading and writing data
+
+### 5.6 Writing to Text Files
+
+```cpp
+#include <fstream>
+```
+
+All the stream classes are defined in this file.
+
+```cpp
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main() {
+    ofstream file;
+    file.open("data.txt");
+
+    if (file.is_open()) {
+        file << "Hello World" << endl;
+    }
+
+    return 0;
+}
+```
+
+Here we can also use our stream manipulators for formatting ouput.
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+
+int main() {
+    ofstream file;
+    file.open("data.txt");
+
+    if (file.is_open()) {
+        // file << "Hello World" << endl;
+        file << setw(20) << "Hello" <<
+                setw(20) << "world" << endl;
+        file.close();
+    }
+
+    return 0;
+}
+```
+
+To create a csv(Comma Separated Value) file.
+
+```cpp
+file << "id,title,year" << endl;
+file << "1,movie_a,1984" << endl;
+file << "2,movie_b,1985" << endl;
+file << "3,movie_c,1986" << endl;
+```
+
+Now here we could also use backslash `\n` instead of `endl`, and this is preferred for performance reasons.
+
+Because these output streams, just like input stream have a buffer, so when we write something to an output stream, the data is not written to the output stream immediately.
+
+First it gets stored in a buffer, which is a temporary storage in memory, and then at some point, the buffer is going to get flushed, and the content is going to get written to the output stream.
+
+Now the difference between `\n` and `endl` is that `endl` always flushes the buffer. So if we have a thousand movies and we use `endl` after writing each movie, we're going to flush the buffer a thousand times.
+
+in contrast if we use `\n` the buffer is going to get flushed only once.
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+
+int main() {
+    ofstream file;
+    file.open("data.csv");
+
+    if (file.is_open()) {
+        file << "id,title,year\n";
+        file << "1,movie_a,1984\n";
+        file << "2,movie_b,1985\n";
+        file << "3,movie_c,1986\n";
+
+        file.close();
+    }
+
+    return 0;
+}
+```
