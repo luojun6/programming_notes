@@ -1673,3 +1673,58 @@ int main() {
     return 0;
 }
 ```
+
+### 5.7 Reading from Text Files
+
+```cpp
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+struct Movie {
+    int id;
+    string title;
+    int year;
+};
+
+int main() {
+    ifstream file;
+    file.open("data.csv");
+
+    if (file.is_open()) {
+        string str;
+        // file >> str;
+        getline(file, str); // To fetch out the headers
+        while (!file.eof())
+        {
+            getline(file, str, ',');
+            if(str.empty()) continue;
+
+            Movie movie;
+            movie.id = stoi(str);
+
+            getline(file, str, ',');
+            movie.title = str;
+
+            getline(file, str, '\n');
+            movie.year = stoi(str);
+
+            // cout << str << endl;;
+            cout << movie.title << endl;
+        }
+
+        file.close();
+    }
+
+    return 0;
+}
+```
+
+### 5.8 Writing to Binary Files
+
+There are two ways to store data in files.
+
+- As text in fext files
+- As data in binary files
+  - Examples of binary files are images, audios files, PDFs, etc.
