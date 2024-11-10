@@ -1728,3 +1728,170 @@ There are two ways to store data in files.
 - As text in fext files
 - As data in binary files
   - Examples of binary files are images, audios files, PDFs, etc.
+  - Unlike text files are not human readable, because the data gets stored in them excatly the same way it stored in memory.
+  - These binary data ar efor machines and not for humans. We often use them when we're dealing with not textual data meaning numbers.
+
+```cpp
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main() {
+
+    int numbers[] = {1'000'000, 2'000'000, 3'000'000};
+    // ofstream file("numbers.txt");
+    ofstream file("numbers.data", ios::binary);
+
+    if (file.is_open()) {
+        // for (auto number : numbers)
+        //     file << number << endl;
+        file.write(reinterpret_cast<char*>(&numbers), sizeof(numbers));
+        file.close();
+    }
+
+    return 0;
+}
+```
+
+### 5.9 Reading from Binary Files
+
+```cpp
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main() {
+
+    int numbers[3];
+    ifstream file("numbers.data", ios::binary);
+
+    if (file.is_open()) {
+        int number;
+
+        while(file.read(reinterpret_cast<char*>(&number), sizeof(number)));
+            cout << number << endl;
+        file.close();
+    }
+
+    return 0;
+}
+```
+
+### 5.10 Working with File Streams
+
+```cpp
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+int main() {
+
+    fstream file;
+    file.open("file.txt", ios::in | ios::out | ios::app);
+    // Manipulate the file
+    file.close();
+
+    return 0;
+}
+```
+
+### 5.11 String Streams
+
+In the cpp, in the C standard library, we have 3 stream classes to work with streams:
+
+- **istringstream**
+  - for reading a string
+- **ostringstream**
+  - for writing a string
+- **stringstream**
+  - for reading and writing a string
+
+Why we need this classes, we use this class as when we need to convert some value to its stream and vice versa.
+
+### 5.12 Converting Values to Strings
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+
+    double number = 12.34;
+    string str = to_string(number);
+
+    cout << number << endl;
+
+    return 0;
+}
+```
+
+![stream_11.png](./images/stream_11.png)
+
+But in some platform, the output is `12.340000`, if you need to have full control over how this number is converted to a string, then you have to use a string stream.
+
+```cpp
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+string to_string(double number, int precision) {
+    stringstream stream;
+
+    stream << fixed << setprecision(2) << number << endl;
+
+    return stream.str();
+
+}
+
+int main() {
+
+    double number = 12.34;
+
+    cout << to_string(number, 2) << endl;
+
+    return 0;
+}
+``
+```
+
+### 5.13 Parsing Strings
+
+```cpp
+#include <iostream>
+#include <sstream>
+
+using namespace std;
+
+
+int main() {
+
+    string str = "10 20";
+    stringstream stream;
+
+    stream.str(str);
+
+    int first;
+    stream >> first;
+
+    int second;
+    stream >> second;
+
+    cout << first + second << endl;
+
+    return 0;
+}
+```
+
+**EXERCISE**
+
+Given the following string, write a function to parsethis into a Movie structure.
+
+"Terminator 1,1984"
+
+Note that here the title contains a space, so we cannot use the extraction operator to extract the title. Instead we have to use the `getline` function.
