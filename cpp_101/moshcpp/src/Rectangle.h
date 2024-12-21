@@ -1,20 +1,30 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
+#include<string>
+using namespace std;
 
 #pragma once
 
-class Rectangle
-{
-public:
+class Rectangle {
+  public:
     Rectangle();
+    Rectangle(const Rectangle& source) = delete;
+    Rectangle(int width, int height);
+    Rectangle(int width, int height, const string& color);
     ~Rectangle();
 
-    int width;
-    int height;
     void draw();
     int getArea();
 
-private:
+    int getWidth() const;
+    void setWidth(int width);
+    int getHeight() const;
+    void setHeight(int height);
+
+  private:
+    int width = 0;
+    int height = 0;
+    string color;
 
 };
 
