@@ -471,6 +471,46 @@ int Rectangle::getObjectsCount() {
 }
 ```
 
+### 1.14 Constant Objects and Functions
+
+![classes_18](./images/classes_18.png)
+
+When we make an object constant, all its attributes become constant or read only as well.
+
+In programming we say this objects becomes **immutable**. To mutate something means to change it, so mutable means changeable, and immutable means unchangeable.
+
+![classes_19](./images/classes_19.png)
+
+We only have `getters`, and we don't have any `setters`, but we have a few other methods that are missing here. We have the `draw` method and `getArea` method...where are those methods?
+
+Look at the declaration of the `getHeight()` method, this method is declared as a constant, that means, in this method, we are not changing the state of this object.
+
+```cpp
+int Rectangle::getHeight() const {
+    return height;
+}
+```
+
+Added `const` in `Rectangle.h`
+
+```cpp
+    int getArea() const ;
+    int getWidth() const;
+```
+
+Added `const` in `Rectangle.cpp`
+
+```cpp
+void Rectangle::draw() const {
+    cout << "Drawing a rectangle" << endl;
+    cout << "Dimensions: " << width << ", " << height << endl;
+}
+
+int Rectangle::getArea() const {
+    return width * height;
+}
+```
+
 ## 2 Operator Overloading
 
 ## 3 Inheritance

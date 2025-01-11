@@ -37,12 +37,12 @@ Rectangle::~Rectangle() {
     cout << "Desctructor called" << endl;
 }
 
-void Rectangle::draw() {
+void Rectangle::draw() const {
     cout << "Drawing a rectangle" << endl;
     cout << "Dimensions: " << width << ", " << height << endl;
 }
 
-int Rectangle::getArea() {
+int Rectangle::getArea() const {
     return width * height;
 }
 

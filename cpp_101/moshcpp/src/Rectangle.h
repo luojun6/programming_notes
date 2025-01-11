@@ -15,9 +15,8 @@ class Rectangle {
     Rectangle(int width, int height, const string& color);
     ~Rectangle();
 
-    void draw();
-    int getArea();
-
+    void draw() const;
+    int getArea() const ;
     int getWidth() const;
     void setWidth(int width);
     int getHeight() const;
