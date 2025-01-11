@@ -1,14 +1,12 @@
 #include "Rectangle.h"
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
 int main() {
-    Rectangle first(10, 20);
-    Rectangle second{30, 40};
-
-    // cout << Rectangle::objectsCount << endl;
-    cout << first.getObjectsCount() << endl;
+    auto rectangle = make_unique<Rectangle>(10, 20);
+    rectangle->draw();
 
     return 0;
 }

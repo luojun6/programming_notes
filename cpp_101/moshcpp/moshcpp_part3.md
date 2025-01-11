@@ -511,6 +511,58 @@ int Rectangle::getArea() const {
 }
 ```
 
+### 1.15 Pointer to Objects
+
+All the `Rectangle` objects we have created so far, we're on the **stack** which is a part of memory that automatically gets cleaned up, when our objects go out of scope.
+
+So when the main function finishes execution, this `Rectangle` variable will go out of scope. So the desctructor of the `Rectangle` object gets called. And then after allocated to this object will be freed automatically.
+
+So objects on the stack are useful when they are local to a function. So we don't need them outside of a function, but sometimes we need an object to stay in memory after a funciton finishes execution.
+
+In those cases, we need to create that object on the heap, or the free store using the new operator.
+
+```cpp
+#include "Rectangle.h"
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    auto* rectangle = new Rectangle(10, 20);
+    rectangle->draw();
+
+    delete rectangle;
+    rectangle = nullptr;
+
+    return 0;
+}
+```
+
+If we don't point `rectangle` to `nullptr`, we'll have a pointer pointing to a memory address that doesn't exist anymore. We refer to that as a **dangling** pointer.
+
+If you forget to free up the memory and reset the pointer, our program will have a memory leak. So it's going to take up some memory, but it will never release that memory.
+
+So in morden c++, we should never use the `new` and `delete` opertors anymore, instead we should use smart pointers.
+
+The great thing about smart pointers is that they will take care of freeing up the memory using its desctructor. So we don't have to worry about doing this.
+
+```cpp
+#include "Rectangle.h"
+#include <iostream>
+#include <memory>
+
+using namespace std;
+
+int main() {
+    auto rectangle = make_unique<Rectangle>(10, 20);
+    rectangle->draw();
+
+    return 0;
+}
+```
+
+![classes_20](./images/classes_20.png)
+
 ## 2 Operator Overloading
 
 ## 3 Inheritance
