@@ -424,7 +424,52 @@ Rectangle(const Rectangle& source) = delete;
 
 What we are doing here, is that we are telling the compiler to delete the copy constructor for us. Then we can not copy in the main file.
 
-### 1.12 The Destructor
+### 1.12 The Desctructor
+
+We have another special function in our classes called a **desctructor**, desctructors are automatcially called when our objects are being desctroyed.
+
+This is an opportunity for us to free system resources that an object is using. So if we allocate memory or open a file or network connection. Then we need to release resources and desctructors.
+
+```cpp
+~Rectangle();
+```
+
+### 1.13 Static Members
+
+All the functions and variables we have declared as above are what we call instance members. These members belong to instances of the `Rectangle` class.
+
+So each instance is going to have its own copy of these members. But we can also declare members that belong to the `Rectangle` class itself.
+
+So we will have a single copy of these members in memory, and that single copy will be shared by all instances. We refer to members tha belong to the class as static members.
+
+Added in `Rectangle.h`
+
+```cpp
+private:
+    static int objectsCount;
+public:
+```
+
+Whenever we declare a static variable in the class, we should always define it in our implementation file.
+
+Back to our implementation file `Rectangle.cpp`
+
+```cpp
+Rectangle::Rectangle(int width, int height) {
+    objectsCount++;
+    cout << "Constructing a rectangle object." << endl;
+    setWidth(width);
+    setHeight(height);
+}
+
+...
+
+int Rectangle::objectsCount = 0;
+
+int Rectangle::getObjectsCount() {
+    return this->objectsCount;
+}
+```
 
 ## 2 Operator Overloading
 

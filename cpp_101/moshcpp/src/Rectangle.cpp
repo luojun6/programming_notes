@@ -14,6 +14,7 @@ Rectangle::Rectangle() {
 // }
 
 Rectangle::Rectangle(int width, int height) {
+    objectsCount++;
     cout << "Constructing a rectangle object." << endl;
     setWidth(width);
     setHeight(height);
@@ -33,7 +34,7 @@ Rectangle::Rectangle(int width,
 //     height{height} {}
 
 Rectangle::~Rectangle() {
-
+    cout << "Desctructor called" << endl;
 }
 
 void Rectangle::draw() {
@@ -64,4 +65,10 @@ void Rectangle::setHeight(int height) {
     if(height < 0)
         throw invalid_argument("height");
     this->height = height;
+}
+
+int Rectangle::objectsCount = 0;
+
+int Rectangle::getObjectsCount() {
+    return this->objectsCount;
 }

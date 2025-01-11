@@ -5,7 +5,10 @@ using namespace std;
 
 int main() {
     Rectangle first(10, 20);
-    Rectangle second = first;
+    Rectangle second{30, 40};
+
+    // cout << Rectangle::objectsCount << endl;
+    cout << first.getObjectsCount() << endl;
 
     return 0;
 }
