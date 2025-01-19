@@ -325,7 +325,7 @@ The reason of this works is because the compiler knows that in this class, we ha
 
 So it's going to implictly convert this integer to a person object, so underflying is going to create a person object, and then it will pass that person object to this function.
 
-But look at the syntax, in this case it doesn't really make sense to pass an integer to this function. This is where we can use the `explicit` keyword to preventthe complier from doing an implict conversion.
+But look at the syntax, in this case it doesn't really make sense to pass an integer to this function. This is where we can use the `explicit` keyword to prevent the complier from doing an implict conversion.
 
 ![classes_15](./images/classes_15.png)
 
@@ -563,7 +563,129 @@ int main() {
 
 ![classes_20](./images/classes_20.png)
 
+### 1.16 Object Array
+
 ## 2 Operator Overloading
+
+### 2.1 Overloading the Equality Operator
+
+The whole idea behind operator overloading is to implement the built-in operators for our classes.
+
+```cpp
+#ifndef LENGTH_H
+#define LENGTH_H
+
+#pragma once
+
+class Length {
+  public:
+    explicit Length(int value);
+    bool operator==(const Length& other) const;
+    bool operator==(int other) const;
+    bool operator!=(int other) const;
+    ~Length();
+
+  private:
+    int value;
+};
+
+#endif
+```
+
+```cpp
+#include "Length.h"
+
+Length::Length(int value) {
+    this->value = value;
+}
+
+bool Length::operator==(const Length& other) const {
+    return value == other.value;
+}
+
+bool Length::operator==(int other) const {
+    return value == other;
+}
+
+bool Length::operator!=(int other) const {
+
+    // return value != other;
+    return !(value == other);
+}
+
+Length::~Length() {
+
+}
+```
+
+```cpp
+#include <iostream>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+
+    Length first{10};
+    Length second{10};
+
+    if(first == second)
+        cout << "first == second" << endl;
+
+    if(first == 10)
+        cout << "first == 10" << endl;
+
+    if(first != 20)
+        cout << "first != 20" << endl;
+
+    return 0;
+}
+```
+
+In the `!=` implemtatation, we don't write `return value != other;`, because if in the future, we change the logic for comparing 2 length objects, we have to make changes to several functions.
+
+We have to change both the equality and inequality. So the better to implement the ineqaulity operator, is to implement it in terms of the equality operator. We can rewrite the implementation like this `return !(value == other);`.
+
+First we compared the value with other value in terms of Equality, at this point this function will get executed. Now whatever this funciton returns will simply invert the value.
+
+```cpp
+bool Length::operator!=(int other) const {
+
+    // return value != other;
+    return !(value == other);
+}
+```
+
+### 2.2 Overloading the Comparison Operators
+
+### 2.3 Overloading the Spaceship Operator
+
+In C++, we have a new operator called the spaceship or three-way comparison operator.
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int x = 10;
+    int y = 20;
+
+    if(x < y) {
+        cout << "x < y" << endl;
+    } else if(x > y) {
+        cout << "x > y" << endl;
+    } else {
+        cout << "x == y" << endl;
+    }
+
+    return 0;
+}
+```
+
+So here we're doing 2 comparisons to identify the relationship between x and y, now both x and y are integers, thre are small primitive types, so the comparison are pretty cheap.
+
+But sometimes we might be working with large complex objects, and these objects might have several attributes that we need to take into account as part of the comparison, in that case our comparisons are going to be expensive.
 
 ## 3 Inheritance
 
