@@ -683,9 +683,190 @@ int main() {
 }
 ```
 
-So here we're doing 2 comparisons to identify the relationship between x and y, now both x and y are integers, thre are small primitive types, so the comparison are pretty cheap.
+So here we're doing 2 comparisons to identify the relationship between x and y, now both x and y are integers, there are small primitive types, so the comparison are pretty cheap.
 
 But sometimes we might be working with large complex objects, and these objects might have several attributes that we need to take into account as part of the comparison, in that case our comparisons are going to be expensive.
+
+This is where we can use a new operator in modern C++ to identify the relationship between 2 objects using a single comparison instead of 2, so here we can type x less than equal to greater than y.
+
+```cpp
+#include <iostream>
+#include <compare>
+
+using namespace std;
+
+int main() {
+    int x = 10;
+    int y = 20;
+    auto result = x <=> y;
+
+
+    // if(x < y) {
+    if(result == strong_ordering::less) {
+        cout << "x < y" << endl;
+        // } else if(x > y) {
+    } else if(result == strong_ordering::greater) {
+        cout << "x > y" << endl;
+    } else {
+        cout << "x == y" << endl;
+    }
+
+    return 0;
+}
+```
+
+```sh
+jun@luo:~/projects/programming_notes/cpp_101/moshcpp$ g++-10 -std=c++20 ./src/spaceship_main.cpp -o ./bin/spaceship
+jun@luo:~/projects/programming_notes/cpp_101/moshcpp$ ./bin/spaceship 
+x < y
+```
+
+So we still have 2 comparisons, but this comparisons could potentially be cheaper than comparing these 2 objects, so now using a single comparison, we're identifying the relationship between x and y.
+
+There is another reason to use the spaceship operator, with a modern C++ compiler, if you overload the spaceship operator, the compiler will automatically generate all the relational operators for us.
+
+```cpp
+#ifndef LENGTH_H
+#define LENGTH_H
+#include <compare>
+
+#pragma once
+
+class Length {
+  public:
+    explicit Length(int value);
+    bool operator==(const Length& other) const;
+    bool operator==(int other) const;
+    bool operator!=(int other) const;
+    // bool operator>(const Length& other) const;
+    // bool operator<(const Length& other) const;
+    // bool operator>=(const Length& other) const;
+    // bool operator<=(const Length& other) const;
+    std::strong_ordering operator<=>(const Length& other) const;
+    ~Length();
+
+  private:
+    int value;
+};
+
+#endif
+```
+
+```cpp
+#include "Length.h"
+
+Length::Length(int value) {
+    this->value = value;
+}
+
+bool Length::operator==(const Length& other) const {
+    return value == other.value;
+}
+
+bool Length::operator==(int other) const {
+    return value == other;
+}
+
+bool Length::operator!=(int other) const {
+
+    // return value != other;
+    return !(value == other);
+}
+
+// bool Length::operator>(const Length &other) const {
+//     return value > other.value;
+// }
+
+// bool Length::operator<(const Length &other) const {
+//     return value < other.value;
+// }
+
+// bool Length::operator>=(const Length &other) const {
+//     return !(value < other.value);
+// }
+
+// bool Length::operator<=(const Length &other) const {
+//     return !(value > other.value);
+// }
+
+std::strong_ordering Length::operator<=>(const Length &other) const
+{
+    return value <=> other.value;
+}
+
+Length::~Length()
+{
+}
+```
+
+```cpp
+#include <iostream>
+#include <compare>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+    Length first{10};
+    Length second{20};
+
+    if (first < second)
+        cout << "First is smaller" << endl; 
+
+    return 0;
+}
+```
+
+### 2.4 Overloading the Stream Insertion Operator
+
+```cpp
+#ifndef LENGTH_H
+#define LENGTH_H
+#include <compare>
+#include <ostream>
+
+#pragma once
+
+class Length {
+  public:
+    explicit Length(int value);
+    bool operator==(const Length& other) const;
+    bool operator==(int other) const;
+    bool operator!=(int other) const;
+    // bool operator>(const Length& other) const;
+    // bool operator<(const Length& other) const;
+    // bool operator>=(const Length& other) const;
+    // bool operator<=(const Length& other) const;
+    std::strong_ordering operator<=> (const Length& other) const;
+    ~Length();
+
+    int getValue() const;
+
+  private:
+    int value;
+};
+
+std::ostream& operator<<(std::ostream& stream, const Length& length);
+
+#endif
+```
+
+```cpp
+int Length::getValue() const
+{
+    return this->value;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Length &length)
+{
+    
+    stream << length.getValue();
+    return stream; 
+}
+```
+The reason we return the `stream` here is so we can chain the insertion operator multiple types. So over here, we should be able to write code like `cout << 1 << 2 << 3;`
+
+
 
 ## 3 Inheritance
 

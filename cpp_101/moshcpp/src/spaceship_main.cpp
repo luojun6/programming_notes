@@ -1,18 +1,15 @@
 #include <iostream>
+#include <compare>
+#include "Length.h"
 
 using namespace std;
 
 int main() {
-    int x = 10;
-    int y = 20;
+    Length first{10};
+    Length second{20};
 
-    if(x < y) {
-        cout << "x < y" << endl;
-    } else if(x > y) {
-        cout << "x > y" << endl;
-    } else {
-        cout << "x == y" << endl;
-    }
+    if (first < second)
+        cout << "First is smaller" << endl; 
 
     return 0;
 }

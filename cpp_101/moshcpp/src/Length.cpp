@@ -18,21 +18,39 @@ bool Length::operator!=(int other) const {
     return !(value == other);
 }
 
-bool Length::operator>(const Length &other) const {
-    return value > other.value;
+// bool Length::operator>(const Length &other) const {
+//     return value > other.value;
+// }
+
+// bool Length::operator<(const Length &other) const {
+//     return value < other.value;
+// }
+
+// bool Length::operator>=(const Length &other) const {
+//     return !(value < other.value);
+// }
+
+// bool Length::operator<=(const Length &other) const {
+//     return !(value > other.value);
+// }
+
+std::strong_ordering Length::operator<=>(const Length &other) const
+{
+    return value <=> other.value;
 }
 
-bool Length::operator<(const Length &other) const {
-    return value < other.value;
+Length::~Length()
+{
 }
 
-bool Length::operator>=(const Length &other) const {
-    return !(value < other.value);
+int Length::getValue() const
+{
+    return this->value;
 }
 
-bool Length::operator<=(const Length &other) const {
-    return !(value > other.value);
-}
-
-Length::~Length() {
+std::ostream &operator<<(std::ostream &stream, const Length &length)
+{
+    
+    stream << length.getValue();
+    return stream; 
 }
