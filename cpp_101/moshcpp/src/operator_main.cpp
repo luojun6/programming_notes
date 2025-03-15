@@ -6,16 +6,12 @@ using namespace std;
 int main() {
 
     Length first{10};
-    Length second{10};
 
-    if(first == second)
-        cout << "first == second" << endl;
+    // Copy constructor (NEW)
+    Length second = first;
 
-    if(first == 10)
-        cout << "first == 10" << endl;
-
-    if(first != 20)
-        cout << "first != 20" << endl;
+    // Assignment operator (EXISTING)
+    second = first;
 
     return 0;
 }

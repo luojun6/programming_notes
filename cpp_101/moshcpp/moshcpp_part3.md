@@ -866,7 +866,355 @@ std::ostream &operator<<(std::ostream &stream, const Length &length)
 ```
 The reason we return the `stream` here is so we can chain the insertion operator multiple types. So over here, we should be able to write code like `cout << 1 << 2 << 3;`
 
+### 2.5 Overloading the Stream Extraction Operator
 
+```cpp
+#ifndef LENGTH_H
+#define LENGTH_H
+#include <compare>
+#include <ostream>
+#include <istream>
+
+#pragma once
+
+class Length {
+  public:
+    explicit Length(int value);
+    bool operator==(const Length& other) const;
+    bool operator==(int other) const;
+    bool operator!=(int other) const;
+    // bool operator>(const Length& other) const;
+    // bool operator<(const Length& other) const;
+    // bool operator>=(const Length& other) const;
+    // bool operator<=(const Length& other) const;
+    std::strong_ordering operator<=> (const Length& other) const;
+    ~Length();
+
+    int getValue() const;
+    void setValue(int value);
+
+  private:
+    int value;
+};
+
+std::ostream& operator<<(std::ostream& stream, const Length& length);
+std::istream& operator>>(std::istream& stream, Length& length);
+
+#endif
+```
+
+```cpp
+#include "Length.h"
+
+Length::Length(int value) {
+    this->value = value;
+}
+
+bool Length::operator==(const Length& other) const {
+    return value == other.value;
+}
+
+bool Length::operator==(int other) const {
+    return value == other;
+}
+
+bool Length::operator!=(int other) const {
+
+    // return value != other;
+    return !(value == other);
+}
+
+// bool Length::operator>(const Length &other) const {
+//     return value > other.value;
+// }
+
+// bool Length::operator<(const Length &other) const {
+//     return value < other.value;
+// }
+
+// bool Length::operator>=(const Length &other) const {
+//     return !(value < other.value);
+// }
+
+// bool Length::operator<=(const Length &other) const {
+//     return !(value > other.value);
+// }
+
+std::strong_ordering Length::operator<=>(const Length &other) const
+{
+    return value <=> other.value;
+}
+
+Length::~Length()
+{
+}
+
+int Length::getValue() const
+{
+    return this->value;
+}
+
+void Length::setValue(int value)
+{
+    this->value = value;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Length &length)
+{
+    
+    stream << length.getValue();
+    return stream; 
+}
+
+std::istream &operator>>(std::istream &stream, Length &length)
+{
+    int value;
+    stream >> value;
+    length.setValue(value);
+    return stream;
+}
+```
+
+### 2.6 Friends of Classes
+
+In the last operators we implementd, we are using the `getter()` and `setter()` we generated to access the value attribute, but sometimes these operators that we define outside of a class need to access certain attributes that don't have a public `getter()` or a `setter()`.
+
+```cpp
+#ifndef LENGTH_H
+#define LENGTH_H
+#include <compare>
+#include <ostream>
+#include <istream>
+
+#pragma once
+
+class Length {
+  public:
+    explicit Length(int value);
+    bool operator==(const Length& other) const;
+    bool operator==(int other) const;
+    bool operator!=(int other) const;
+    std::strong_ordering operator<=> (const Length& other) const;
+    ~Length();
+
+    int getValue() const;
+    void setValue(int value);
+
+  private:
+    int value;
+    int x;
+
+    // Declare this function as friend, then this function can access the private attributes
+    friend std::ostream& operator<<(std::ostream& stream, const Length& length);
+};
+std::ostream& operator<<(std::ostream& stream, const Length& length);
+
+std::istream& operator>>(std::istream& stream, Length& length);
+
+#endif
+```
+
+### 2.7 Overloading the Arithmetic Operators
+
+```cpp
+Length operator+(const Length& other) const;
+Length operator+(int _value) const;
+```
+
+```cpp
+std::strong_ordering Length::operator<=>(const Length &other) const
+{
+    return value <=> other.value;
+}
+
+Length Length::operator+(int _value) const
+{
+    return Length(this->value + _value);
+}
+```
+
+```cpp
+#include <iostream>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+
+    Length first{10};
+    Length second{10};
+
+    if(first == second)
+        cout << "first == second" << endl;
+
+    if(first == 10)
+        cout << "first == 10" << endl;
+
+    if(first != 20)
+        cout << "first != 20" << endl;
+
+    cout << "Change the first: ";
+    cin >> first;
+    cout << first << endl;
+
+    Length third = first + second;
+    cout << "third: " << third << endl; 
+    cout << "third + 10 = " << third + 10 << endl;
+
+    return 0;
+}
+```
+
+```sh
+jun@luo:~/projects/programming_notes/cpp_101/moshcpp$ g++-10 -std=c++20 ./src/operator_main.cpp ./src/Length.cpp -o ./bin/main 
+jun@luo:~/projects/programming_notes/cpp_101/moshcpp$ ./bin/main 
+first == second
+first == 10
+first != 20
+Change the first: 20
+20
+third: 30
+third + 10 = 40
+```
+
+### 2.8 Overloading Compound Assignment operators
+
+Here we are adding something to an existing object, so we are not creating a brand new length object, we are modifying an existing object. So the return type should be `Length&` meaning an existing length object.
+
+We are not going to declare this funciton as `const`, because in this funciton, we'll be modifying the current length object. So `this` is a pointer to the current object, but `this` is just a point, it holds a memory address, but here we need an actual length object. Now how can we get that object => by de-referencing this pointer.
+
+```cpp
+Length& operator+=(const Length& other);
+```
+
+What shall we return in the implementation function, we need a refrence to the current object,
+
+```cpp
+Length& Length::operator+=(const Length &other)
+{
+    value += other.value;
+    return *this;
+}
+```
+
+### 2.9 Overloading the Assignment Operator
+
+If you have two `Length` objects, we can always assign one to another. The reason this works is because under the hood, the compiler generate a default assignment operator for us. This default assignment operator copies all the member variables of the source object to the target object.
+
+```cpp
+#include <iostream>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+
+    Length first{10};
+    Length second{20};
+    first = second;
+
+    return 0;
+}
+```
+
+That this works perfectly fine pretty much all the time, but there are situations where we need to have control over how objects are assigned. 
+
+```cpp
+Length& operator=(const Length& other);
+```
+
+```cpp
+#include <iostream>
+
+...
+
+Length& Length::operator=(const Length &other)
+{
+    std::cout << "Object assigned" << std::endl;
+    value = other.value;
+    return *this;
+}
+```
+
+```cpp
+#include <iostream>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+
+    Length first{10};
+    Length second{20};
+    first = second;
+
+    return 0;
+}
+```
+
+```sh
+jun@luo:~/projects/programming_notes/cpp_101/moshcpp$ g++-10 -std=c++20 ./src/operator_main.cpp ./src/Length.cpp -o ./bin/main 
+jun@luo:~/projects/programming_notes/cpp_101/moshcpp$ ./bin/main 
+Object assigned
+```
+
+Let's create a default constructor for the `Length` class, so we can create a `Length` object with supplying a value.
+
+```cpp
+class Length {
+  public:
+    explicit Length(int value);
+    Length() = default;
+
+...
+...
+}
+```
+
+```cpp
+int main() {
+
+    Length first{10};
+    Length second = first;
+
+    return 0;
+}
+```
+
+Now if we're on tihs program, we are not going to see the "Object assign" message. Because this `=` sign has different meanings depending on how we use it.
+
+If we use it to initialize a new object, it reprensents the copy operation, so in this case, the **copy constructor** is called. Because we're initializing a new object. 
+
+However on the next line, if we set the `second = first`, because we have an existing object, this `=` sign represents the assignment operator, so here we have the assignment operator and this used when we assign to an existing object.
+
+```cpp
+int main() {
+
+    Length first{10};
+
+    // Copy constructor (NEW)
+    Length second = first;
+
+    // Assignment operator (EXISTING)
+    second = first;
+
+    return 0;
+}
+```
+
+Sometimes we want to prevent an object from being copied. We can create a copy constructor that takes a constant length as a reference, now we `delete` this.
+
+```cpp
+Length(const Length& other) = delete;
+```
+
+![operator_0.png](./images/operator_0.png)
+
+```cpp
+Length& operator=(const Length& other) = delete;
+```
+
+Then we need to delete the implementation as well.
 
 ## 3 Inheritance
 

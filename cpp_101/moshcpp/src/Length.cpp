@@ -1,3 +1,5 @@
+
+#include <iostream>
 #include "Length.h"
 
 Length::Length(int value) {
@@ -43,9 +45,37 @@ Length::~Length()
 {
 }
 
+Length Length::operator+(const Length &other) const
+{
+    return Length(value + other.value);
+}
+
+Length Length::operator+(int _value) const
+{
+    return Length(this->value + _value);
+}
+
+Length& Length::operator+=(const Length &other)
+{
+    value += other.value;
+    return *this;
+}
+
+Length& Length::operator=(const Length &other)
+{
+    std::cout << "Object assigned" << std::endl;
+    value = other.value;
+    return *this;
+}
+
 int Length::getValue() const
 {
     return this->value;
+}
+
+void Length::setValue(int value)
+{
+    this->value = value;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Length &length)
@@ -53,4 +83,12 @@ std::ostream &operator<<(std::ostream &stream, const Length &length)
     
     stream << length.getValue();
     return stream; 
+}
+
+std::istream &operator>>(std::istream &stream, Length &length)
+{
+    int value;
+    stream >> value;
+    length.setValue(value);
+    return stream;
 }
