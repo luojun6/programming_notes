@@ -1,17 +1,13 @@
 #include <iostream>
-#include "Length.h"
+#include "Array.h"
 
 using namespace std;
 
 int main() {
 
-    Length first{10};
-
-    // Copy constructor (NEW)
-    Length second = first;
-
-    // Assignment operator (EXISTING)
-    second = first;
+    Array array{10};
+    array[0] = 1;
+    cout << array[0] << endl;
 
     return 0;
 }

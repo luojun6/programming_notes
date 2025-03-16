@@ -1214,7 +1214,130 @@ Length(const Length& other) = delete;
 Length& operator=(const Length& other) = delete;
 ```
 
-Then we need to delete the implementation as well.
+### 2.10 Overloading Unary Operators
+
+```cpp
+    Length& operator++();   // prefix
+    Length operator++(int); // postfix
+```
+
+```cpp
+Length &Length::operator++()
+{
+    value++;
+    return *this;
+}
+
+Length Length::operator++(int)
+{
+    Length copy = *this;
+    operator++();
+    return copy;
+}
+```
+
+```cpp
+int main() {
+
+    Length first{10};
+    Length second = first++;
+    cout << "First: " << first << endl;
+    cout << "Second: " << second << endl;
+
+    return 0;
+}
+```
+
+### 2.11 Overloading the Subscript Operator
+
+Subscript operator is the square bracket we use for accessing individual elements in an array using an index.
+
+So if you have a class that behaves like an array, we can define the subscript operator to provide access to individual elements in that class.
+
+Add a constructor that takes the initial size of the array, and for that we're going to use `size_t` which is a type or a data type that represents the size of the largest object the system can handle, oftenly translates to `unsigned int` or `unsigned long long` depending on the compiler, like `Array(size_t size);` and it needs to include `<cstddef>`.
+
+In this class, we need an integer array for storing a bunch of integers, but we cannot declare an integer array like `int values[size];` because the size is determined at runtime, so at compile time, the compiler doesn't know how many elements it should allocate for this array.
+
+So to solve this problem, we need to allocate memory dynamically, so let's generate the definition for the constructor, Clang is suggesting to make this constructor `explicit` which is a great idea.
+
+![operator_1.png](./images/operator_1.png)
+
+And we should also store the initial size, because an array should always know its size.
+
+```cpp
+#ifndef ARRAY_H
+#define ARRAY_H
+
+#include <cstddef>
+
+#pragma once
+
+class Array
+{
+public:
+    explicit Array(size_t size);
+    ~Array();
+
+private:
+    int* values;
+    size_t size;
+};
+
+#endif
+```
+
+```cpp
+#include "Array.h"
+
+
+Array::Array(size_t size)
+{
+    values = new int[size];
+    this->size = size;
+}
+
+Array::~Array()
+{
+    delete[] values;
+}
+```
+
+Because we have allocated memory dynamically in the constructor, we should release it in the destructor. 
+
+Then let's add the subscript operator, now the return type has to be an integer reference, because with this operator, will be accessing an existing integer in this array.
+
+What about the parameter => has to be an index, and the largest index we can have is `size_t`. So the parameter should be type `size_t` called `index`.
+
+```cpp
+int& operator[](size_t index);
+```
+
+```cpp
+int &Array::operator[](size_t index)
+{   
+    // size: 10, index: 9
+    if (index >= size)
+        throw std::invalid_argument("index");
+
+    return values[index];
+}
+```
+
+```cpp
+#include <iostream>
+#include "Array.h"
+
+using namespace std;
+
+int main() {
+
+    Array array{10};
+    array[0] = 1;
+    cout << array[0] << endl;
+
+    return 0;
+}
+```
 
 ## 3 Inheritance
 

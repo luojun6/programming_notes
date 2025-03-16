@@ -10,7 +10,7 @@ class Length {
   public:
     explicit Length(int value);
     Length() = default;
-    Length(const Length& other) = delete;
+    // Length(const Length& other) = delete;
 
     bool operator==(const Length& other) const;
     bool operator==(int other) const;
@@ -22,6 +22,8 @@ class Length {
     Length operator+(int _value) const;
     Length& operator+=(const Length& other);
     Length& operator=(const Length& other);
+    Length& operator++();   // prefix
+    Length operator++(int); // postfix
 
     int getValue() const;
     void setValue(int value);

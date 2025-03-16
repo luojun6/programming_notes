@@ -68,6 +68,19 @@ Length& Length::operator=(const Length &other)
     return *this;
 }
 
+Length &Length::operator++()
+{
+    value++;
+    return *this;
+}
+
+Length Length::operator++(int)
+{
+    Length copy = *this;
+    operator++();
+    return copy;
+}
+
 int Length::getValue() const
 {
     return this->value;
