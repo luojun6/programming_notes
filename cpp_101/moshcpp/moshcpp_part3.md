@@ -1339,6 +1339,166 @@ int main() {
 }
 ```
 
+### 2.12 Overloading the Indirection Operator
+
+In the manual practice `SmartPoint` class, that takes an integer pointer in its constructor and releases it in the desctrutor, similar to smart pointers in the standard libray.
+
+```cpp
+#ifndef SMARTPOINTER_H
+#define SMARTPOINTER_H
+
+#pragma once
+
+class SmartPointer
+{
+public:
+    explicit SmartPointer(int *ptr);
+    ~SmartPointer();
+
+private:
+    int* ptr;
+};
+
+#endif
+```
+
+```cpp
+#include "SmartPointer.h"
+
+SmartPointer::SmartPointer(int *ptr)
+{
+    this->ptr = ptr;
+}
+
+SmartPointer::~SmartPointer()
+{
+    delete ptr;
+}
+```
+
+But how to access the actual integer that this pointer `ptr` points to. So we ave an integer pointer `ptr`, but there is no way to access that underlying integer in memory. So we can not read or modify it. To solve this problem, we need to overload the interaction operator.
+
+So here we add a new operator in direction without any parameters, and the return type has to be integer as a reference `int&`, because we will be accessing and existing integer in memory.
+
+```cpp
+int& operator*();
+```
+
+```cpp
+int &SmartPointer::operator*()
+{
+    return *ptr;
+}
+```
+
+### 2.13 Overloading Type Conversions
+
+If we declare an integer and assign this `length` object, our code doesn't get complied, because the compiler doesn't know how to converter a `length` object to an integer.
+
+```cpp
+#include <iostream>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+    Length length{10};
+    int x = length;
+
+    return 0;
+
+}
+```
+
+We can easily solve this problem by defining a conversion function in the length class. We are going to add a function which doesn't have any parameters or a return type. It only has a name, and the name is operator follow by a space and the target type.
+
+```cpp
+operator int() const;
+```
+
+```cpp
+Length::operator int() const
+{
+    return value;
+}
+```
+
+We can use the `explict` keyword then the compiler will no longer implictly convert a length object to integer. 
+
+```cpp
+explicit operator int() const;
+```
+
+Then in the invoking we have to explictly cast a `length` object to the integer.
+
+```cpp
+#include <iostream>
+#include "Length.h"
+
+using namespace std;
+
+int main() {
+    Length length{10};
+    int x = static_cast<int>(length);
+
+    cout << length << endl;
+
+    return 0;
+
+}
+```
+
+### 2.14 Inline Functions
+
+So far we have defined all the functions of the `Length` class in the cpp or implementaiton file. Or we can also define these functions in the heder file, for example:
+
+```cpp
+...
+...
+...
+    explicit operator int() const;
+    // Inline function
+    int getValue() const {
+      return value;
+    };
+    void setValue(int value);
+...
+...
+...
+```
+Now we refer to this funciton as an `inline` function, by making this function `inline`, we are asking the compiler to replace the function call with the code inside the function.
+
+Back to our main file, if you call `length.getValue()`, the compiler will replace this function call with the code inside the function, and this can result in a slight performance boost, because calling functions involves a bit of overhead.
+
+So when we call a function, the compiler has to do some magic, so the control goes inside this function `length.getValue()` and then goes back to the `main()` function. Now this kind of movement has a tiny of overhead and `inline` functions allow us to remove that overhead.
+
+So does it mean we should define all of our functions here? Defintely and absolutely **NOT**! Because this header file represents the interface of our class, now we should keep this interface as stable as possible, because otherwise every time we change this file, this file as well as all the files that are dependent on this and their dependencies have to be recompanied.
+
+So to reduse the compilation time, we should move all the details all the logic all the algorithms in the cpp or implementation file.
+
+The other reason for not defining these functions in as `inline` is that doing so causes clutter, so we cannot look at this class and tell what features it provides, will be distracted by so much detail by so much complexity.
+
+So as a best practice, we should keep the header file as simple and as stable as possible.
+
+But what if we want to declare a function as `inline`?  Well we can still do so using the `inline` keyword in the cpp or implementation file, instead of declaring the details in header file.
+
+```cpp
+inline int Length::getValue() const
+{
+    return this->value;
+}
+```
+
+With this, we are asking the compiler to replace all the costs to this function with the code inside this function. 
+
+Just note that there is no guarantee that this will happen, this is up to the compiler to decide, if this should happen or not.
+
+Also you should use this technique only with really simple functions that don't change, preferable one liners like this function. Because if your function has more than one line, let's say 3 lines, every time you have a call to that function, that call is going to be replaced by 3 lines. So this can increse the size ofthe executable, the size of your application.
+
+Now as the size of the executable increases, the performace might suffer. So don't blindly make your functions in line. In fact most modern cpp compilers will automatically decide whether they should inline functions or not, without you do anything.
+
+So my advice is stay away from this technique unless you know what you're doing.
+
 ## 3 Inheritance
 
 ## 4 Polymorphism

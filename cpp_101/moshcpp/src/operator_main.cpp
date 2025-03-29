@@ -1,13 +1,12 @@
 #include <iostream>
-#include "Array.h"
+#include "Length.h"
 
 using namespace std;
 
 int main() {
-
-    Array array{10};
-    array[0] = 1;
-    cout << array[0] << endl;
+    Length length{10};
+    int value = length.getValue();
 
     return 0;
+
 }

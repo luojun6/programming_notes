@@ -81,9 +81,14 @@ Length Length::operator++(int)
     return copy;
 }
 
-int Length::getValue() const
+inline int Length::getValue() const
 {
     return this->value;
+}
+
+Length::operator int() const
+{
+    return value;
 }
 
 void Length::setValue(int value)

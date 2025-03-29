@@ -24,6 +24,7 @@ class Length {
     Length& operator=(const Length& other);
     Length& operator++();   // prefix
     Length operator++(int); // postfix
+    explicit operator int() const;
 
     int getValue() const;
     void setValue(int value);
