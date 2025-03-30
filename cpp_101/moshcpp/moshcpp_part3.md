@@ -305,6 +305,7 @@ A default constructor is a constructor with no parameters. Note that just like f
 class Rectangle {
   public:
     Rectangle() = default;
+}
 ```
 
 ```cpp
@@ -1499,10 +1500,131 @@ Now as the size of the executable increases, the performace might suffer. So don
 
 So my advice is stay away from this technique unless you know what you're doing.
 
-## 3 Inheritance
+## 3 Inheritance and Polymorphism
 
-## 4 Polymorphism
+### 3.1 Inheritance
 
-## 5 Exceptions
+Inheritance is a mechanism for reusing code. So we can implement all these common features once in a class like `Widget`, and then have other classes inherit these features.
 
-## 6 Tempates
+![inheritance_0.png](./images/inheritance_0.png)
+
+In this scenario, we refer the widget class as the base or and the textbox class as the derived or child class. And this arrwo between these 2 classes reprsents the inheritance relationship. We say a text box is a widget.
+
+```cpp
+#ifndef WIDGET_H
+#define WIDGET_H
+
+#pragma once
+
+class Widget
+{
+public:
+    void enable();
+    void disable();
+    bool isEnabled() const;
+
+private:
+    bool enabled;
+};
+
+#endif
+```
+
+```cpp
+#include "Widget.h"
+
+void Widget::enable()
+{
+    enabled = true;
+}
+
+void Widget::disable()
+{
+    enabled = false;
+}
+
+bool Widget::isEnabled() const
+{
+    return enabled;
+}
+```
+
+```cpp
+#ifndef TEXTBOX_H
+#define TEXTBOX_H
+#include <string>
+#include "Widget.h"
+
+#pragma once
+using namespace std;
+
+class TextBox : public Widget
+{
+public:
+    TextBox() = default;
+    explicit TextBox(const string& value);
+    string getValue();
+    void setValue(const string& value);
+private:
+    string value;
+};
+
+#endif
+```
+
+```cpp
+#include "TextBox.h"
+
+TextBox::TextBox()
+{
+    value = "";
+}
+
+
+TextBox::TextBox(const string &value)
+{
+    this->value = value;
+}
+
+string TextBox::getValue()
+{
+    return value;
+}
+
+void TextBox::setValue(const string &value)
+{
+    this->value = value;
+}
+```
+
+Now when we use `public` here to inherit from `Widget`, that means the public members of this class will be inherited as ***public***, so we can acccess them outside of the `TextBox` class.
+
+```cpp
+#include <iostream>
+#include "TextBox.h"
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    TextBox box;
+    box.enable();    
+    cout << box.isEnabled() << endl;
+
+    return 0;
+}
+```
+
+What if we use `private` here, that means the public members of this class will become ***private*** in the `TextBox` class. So the inherited members are not visible outside of the `TextBox` class. But we can still access them inside the `TextBox` class.
+
+Most of the time I would say, 99% of the fime, we would use the `public` modifier here, because the public members of the `Widget` class represent the interface of this class. 
+
+So if you want to inherit all these features in a derivative class, we still want to have those features. Thay's why most of the time, we use the `public` keyword here.
+
+### 3.2 Protected Members
+
+
+
+## 4 Exceptions
+
+## 5 Tempates
